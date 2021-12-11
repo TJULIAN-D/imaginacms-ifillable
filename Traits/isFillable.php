@@ -64,8 +64,7 @@ trait isFillable
     //Instance response
     $response = [];
     //Get model fillable
-    //$modelFillable = array_merge($this->getFillable(), ['medias_single', 'medias_multi']);
-    $modelFillable = $this->getFillable();
+    $modelFillable = array_merge($this->getFillable(), ['id']);
     //Get model translatable fields
     $modelTranslatableAttributes = $this->translatedAttributes ?? [];
 
