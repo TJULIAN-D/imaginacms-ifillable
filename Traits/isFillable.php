@@ -4,6 +4,7 @@ namespace Modules\Ifillable\Traits;
 
 use App;
 use Modules\Ifillable\Entities\Field;
+use Illuminate\Support\Str;
 
 trait isFillable
 {
@@ -127,11 +128,11 @@ trait isFillable
 
     foreach (json_decode(json_encode($extraFields)) as $extraField) {
       //Format field
-      $response[$extraField->name] = $extraField->value;
+      $response[Str::camel($extraField->name)] = $extraField->value;
       //Format translatable field
       foreach ($this->getAvailableLocales() as $lang) {
         if (!isset($response[$lang])) $response[$lang] = [];
-        $response[$lang][$extraField->name] = $extraField->{$lang}->value ?? null;
+        $response[$lang][Str::camel($extraField->name)] = $extraField->{$lang}->value ?? null;
       }
     }
 
