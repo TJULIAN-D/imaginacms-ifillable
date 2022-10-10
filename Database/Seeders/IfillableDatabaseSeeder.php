@@ -15,7 +15,7 @@ class IfillableDatabaseSeeder extends Seeder
     public function run()
     {
         Model::unguard();
-
+        $this->call(IfillableModuleTableSeeder::class);
         // $this->call("OthersTableSeeder");
     }
 }
