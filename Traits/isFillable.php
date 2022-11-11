@@ -125,17 +125,16 @@ trait isFillable
   {
     //instance response
     $response = [];
-
     foreach (json_decode(json_encode($extraFields)) as $extraField) {
       //Format field
       $response[Str::camel($extraField->name)] = $extraField->value;
       //Format translatable field
       foreach ($this->getAvailableLocales() as $lang) {
         if (!isset($response[$lang])) $response[$lang] = [];
+        if (!is_array($response[$lang])) $response[$lang] = (array)$response[$lang];
         $response[$lang][Str::camel($extraField->name)] = $extraField->{$lang}->value ?? null;
       }
     }
-
     //response
     return $response;
   }
