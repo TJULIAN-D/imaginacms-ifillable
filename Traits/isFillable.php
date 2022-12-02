@@ -130,8 +130,7 @@ trait isFillable
       $response[Str::camel($extraField->name)] = $extraField->value;
       //Format translatable field
       foreach ($this->getAvailableLocales() as $lang) {
-        if (!isset($response[$lang])) $response[$lang] = [];
-        if (!is_array($response[$lang])) $response[$lang] = (array)$response[$lang];
+        if (!isset($response[$lang]) || !is_array($response[$lang])) $response[$lang] = [];
         $response[$lang][Str::camel($extraField->name)] = $extraField->{$lang}->value ?? null;
       }
     }
