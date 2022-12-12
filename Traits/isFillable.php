@@ -65,7 +65,11 @@ trait isFillable
     //Instance response
     $response = [];
     //Get model fillable
-    $modelFillable = array_merge($this->getFillable(), ['id']);
+    $modelFillable = array_merge(
+      $this->getFillable(),//Fillables
+      array_keys($this->getRelations()),//Relations
+      getIgnoredFields()//Ignored fields
+    );
     //Get model translatable fields
     $modelTranslatableAttributes = $this->translatedAttributes ?? [];
 
