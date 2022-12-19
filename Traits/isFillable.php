@@ -65,7 +65,13 @@ trait isFillable
     //Instance response
     $response = [];
     //Get model fillable
-    $modelFillable = array_merge($this->getFillable(), ['id']);
+    $modelFillable = array_merge(
+      $this->getFillable(),//Fillables
+      $this->translatedAttributes ?? [],//Translated attributes
+      array_keys($this->getRelations()),//Relations
+      getIgnoredFields()//Ignored fields
+    );
+
     //Get model translatable fields
     $modelTranslatableAttributes = $this->translatedAttributes ?? [];
 
@@ -130,8 +136,7 @@ trait isFillable
       $response[Str::camel($extraField->name)] = $extraField->value;
       //Format translatable field
       foreach ($this->getAvailableLocales() as $lang) {
-        if (!isset($response[$lang])) $response[$lang] = [];
-        if (!is_array($response[$lang])) $response[$lang] = (array)$response[$lang];
+        if (!isset($response[$lang]) || !is_array($response[$lang])) $response[$lang] = [];
         $response[$lang][Str::camel($extraField->name)] = $extraField->{$lang}->value ?? null;
       }
     }
