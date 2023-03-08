@@ -16,5 +16,6 @@ class IfillableDatabaseSeeder extends Seeder
   public function run()
   {
     $this->call(ClearIgnoredFieldsSeeder::class);
+    $this->call(IfillableModuleTableSeeder::class);
   }
 }
