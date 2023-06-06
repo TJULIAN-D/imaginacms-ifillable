@@ -5,6 +5,7 @@ namespace Modules\Ifillable\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Ifillable\Database\Seeders\ClearIgnoredFieldsSeeder;
+use Modules\Isite\Jobs\ProcessSeeds;
 
 class IfillableDatabaseSeeder extends Seeder
 {
@@ -15,7 +16,10 @@ class IfillableDatabaseSeeder extends Seeder
    */
   public function run()
   {
-    $this->call(ClearIgnoredFieldsSeeder::class);
-    $this->call(IfillableModuleTableSeeder::class);
+    Model::unguard();
+    ProcessSeeds::dispatch([
+      "baseClass" => "\Modules\Ifillable\Database\Seeders",
+      "seeds" => ["ClearIgnoredFieldsSeeder", "IfillableModuleTableSeeder"]
+    ]);
   }
 }
