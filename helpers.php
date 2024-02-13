@@ -10,7 +10,8 @@ if (!function_exists('getIgnoredFields')) {
         'created_at', 'created_by',
         'updated_at', 'updated_by',
         'deleted_at', 'deleted_by',
-        'media_files', 'medias_single'
+        'media_files', 'medias_single',
+        'medias_multi'
       ],
       //Ignore any available locale as field
       array_keys(config('available-locales'))
