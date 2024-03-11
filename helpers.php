@@ -11,7 +11,7 @@ if (!function_exists('getIgnoredFields')) {
         'updated_at', 'updated_by',
         'deleted_at', 'deleted_by',
         'media_files', 'medias_single',
-        'medias_multi'
+        'medias_multi', 'pivot'
       ],
       //Ignore any available locale as field
       array_keys(config('available-locales'))
