@@ -64,6 +64,8 @@ trait isFillable
   {
     //Instance response
     $response = [];
+    //temp response to save locales
+    $localeResponse = [];
     //Get model fillable
     $modelFillable = array_merge(
       $this->getFillable(),//Fillables
@@ -71,7 +73,8 @@ trait isFillable
       array_keys($this->getRelations()),//Relations
       getIgnoredFields()//Ignored fields
     );
-
+    //Get keys of default locale in request
+    $defaultLocaleData = array_keys($extraFields[\App::getLocale()] ?? []);
     //Get model translatable fields
     $modelTranslatableAttributes = $this->translatedAttributes ?? [];
 
@@ -79,16 +82,19 @@ trait isFillable
       //Validate translatable fields
       if (in_array($keyField, $this->getAvailableLocales())) {
         //Instance language in response
-        $response[$keyField] = [];
+        $localeResponse[$keyField] = [];
         //compare with translatable attributes
         foreach ($field as $keyTransField => $transField) {
-          if (!in_array($keyTransField, $modelTranslatableAttributes)) $response[$keyField][$keyTransField] = $transField;
+          if (!in_array($keyTransField, $modelTranslatableAttributes)) $localeResponse[$keyField][$keyTransField] = $transField;
         }
       } //Compare with model fillable and model relations
-      else if (!in_array($keyField, $modelFillable) && !method_exists($this, $keyField))
-        $response[$keyField] = $field;
+      else if (!in_array($keyField, $modelFillable) && !method_exists($this, $keyField)) {
+        if(!in_array($keyField, $defaultLocaleData)) $response[$keyField] = $field;
+      }
     }
 
+    // Merge the locale response with the original response to priority locales
+    $response = array_merge($response, $localeResponse);
     //Response
     return $response;
   }
