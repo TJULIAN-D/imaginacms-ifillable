@@ -53,44 +53,50 @@ trait isFillable
         return array_keys(\LaravelLocalization::getSupportedLocales());
     }
 
-    /**
-     * Validate data to keep only fields to sync
-     */
-    public function validateExtraFillable($extraFields = [])
-    {
-        //Instance response
-        $response = [];
-        //Get model fillable
-        $modelFillable = array_merge(
-            $this->getFillable(),//Fillables
-            $this->translatedAttributes ?? [],//Translated attributes
-            array_keys($this->getRelations()),//Relations
-            getIgnoredFields()//Ignored fields
-        );
+  /**
+   * Validate data to keep only fields to sync
+   *
+   * @param array $extraFields
+   * @return array
+   */
+  public function validateExtraFillable($extraFields = [])
+  {
+    //Instance response
+    $response = [];
+    //temp response to save locales
+    $localeResponse = [];
+    //Get model fillable
+    $modelFillable = array_merge(
+      $this->getFillable(),//Fillables
+      $this->translatedAttributes ?? [],//Translated attributes
+      array_keys($this->getRelations()),//Relations
+      getIgnoredFields()//Ignored fields
+    );
+    //Get keys of default locale in request
+    $defaultLocaleData = array_keys($extraFields[\App::getLocale()] ?? []);
+    //Get model translatable fields
+    $modelTranslatableAttributes = $this->translatedAttributes ?? [];
 
-        //Get model translatable fields
-        $modelTranslatableAttributes = $this->translatedAttributes ?? [];
-
-        foreach ($extraFields as $keyField => $field) {
-            //Validate translatable fields
-            if (in_array($keyField, $this->getAvailableLocales())) {
-                //Instance language in response
-                $response[$keyField] = [];
-                //compare with translatable attributes
-                foreach ($field as $keyTransField => $transField) {
-                    if (! in_array($keyTransField, $modelTranslatableAttributes)) {
-                        $response[$keyField][$keyTransField] = $transField;
-                    }
-                }
-            } //Compare with model fillable and model relations
-            elseif (! in_array($keyField, $modelFillable) && ! method_exists($this, $keyField)) {
-                $response[$keyField] = $field;
-            }
+    foreach ($extraFields as $keyField => $field) {
+      //Validate translatable fields
+      if (in_array($keyField, $this->getAvailableLocales())) {
+        //Instance language in response
+        $localeResponse[$keyField] = [];
+        //compare with translatable attributes
+        foreach ($field as $keyTransField => $transField) {
+          if (!in_array($keyTransField, $modelTranslatableAttributes)) $localeResponse[$keyField][$keyTransField] = $transField;
         }
-
-        //Response
-        return $response;
+      } //Compare with model fillable and model relations
+      else if (!in_array($keyField, $modelFillable) && !method_exists($this, $keyField)) {
+        if(!in_array($keyField, $defaultLocaleData)) $response[$keyField] = $field;
+      }
     }
+
+    // Merge the locale response with the original response to priority locales
+    $response = array_merge($response, $localeResponse);
+    //Response
+    return $response;
+  }
 
     /**
      * Format extra fillable to save in data base
