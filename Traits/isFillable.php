@@ -151,6 +151,12 @@ trait isFillable
         return $response;
     }
 
+    //Method to return a field by name to the model
+    public function getFieldByName($name, $defaultValue = null)
+    {
+     $field = $this->fields->where('name',  camelToSnake($name))->first();
+     return $field->value ?? $defaultValue;
+    }
     /**
      * Relation morphMany Schedules
      */
